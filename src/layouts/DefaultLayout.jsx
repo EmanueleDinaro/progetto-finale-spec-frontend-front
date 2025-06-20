@@ -6,7 +6,9 @@ export default function DefaultLayout() {
   return (
     <div>
       <Header />
-      <Outlet />
+      <main className="bg-neutral-200 min-h-screen p-6">
+        <Outlet />
+      </main>
       <Footer />
     </div>
   );
