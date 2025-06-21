@@ -4,13 +4,30 @@ import beerImage from "../database/beerImage";
 export default function Home() {
   const [beers, setBeers] = useState([]);
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-  function handleSearch() {
-    return beers.filter(
-      (beer) =>
-        beer.title.toLowerCase().includes(search.toLocaleLowerCase()) ||
-        beer.category.toLowerCase().includes(search.toLocaleLowerCase())
+  // Funzione per matchare il testo nella searchbar
+  function matchSearchBar(beer) {
+    return (
+      beer.title.toLowerCase().includes(search.toLowerCase()) ||
+      beer.category.toLowerCase().includes(search.toLowerCase())
     );
+  }
+
+  // Funzione per matchare la categoria selezionata dalla select
+  const matchCategory = (beer) => {
+    if (!selectedCategory || selectedCategory === "Tutte le birre") {
+      return true;
+    } else {
+      return beer.category
+        .toLowerCase()
+        .includes(selectedCategory.toLowerCase());
+    }
+  };
+
+  // Funzione per filtrare tutte le birre
+  function getFilteredBeers() {
+    return beers.filter((beer) => matchSearchBar(beer) && matchCategory(beer));
   }
 
   useEffect(() => {
@@ -32,28 +49,42 @@ export default function Home() {
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
           Birre Artigianali
         </h1>
-        <input
-          className="w-50 border border-neutral-400 rounded-2xl pl-3 h-10"
-          type="text"
-          placeholder="Cerca una birra"
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-          }}
-        />
+        <div className="flex flex-col sm:flex-row gap-x-5 gap-y-2 mb-2 sm:mb-0">
+          <select
+            className="w-50 border border-neutral-400 rounded-2xl pl-3 h-10"
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+            }}
+            value={selectedCategory}
+          >
+            <option value="Tutte le birre">Tutte le categorie</option>
+            <option value="Berliner Weisse">Berliner Weisse</option>
+            <option value="Gose">Gose</option>
+            <option value="IPA">IPA - Imperial/Double IPA</option>
+            <option value="Stout">Stout - Imperial Stout</option>
+            <option value="Belgian Strong Ale">Belgian Strong Ale</option>
+            <option value="Lambic">Lambic</option>
+          </select>
+          <input
+            className="w-50 border border-neutral-400 rounded-2xl pl-3 h-10"
+            type="text"
+            placeholder="Cerca una birra"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+          />
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {handleSearch()
-          .filter(
-            (beer) =>
-              beer.title.toLowerCase().includes(search.toLowerCase()) ||
-              beer.category.toLowerCase().includes(search.toLowerCase())
-          )
-          // filtro, grazie allo stato search, prima di mappare, se lo stato search è vuoto non succede nulla ma se il search si riempie fa un ri-render del componente e mappa in base all'array beers filtrato.
-          .map((beer) => (
+        {
+          // La funzione getFilteredBeers ritorna tutte le birre inizialmente perché una stringa vuota ("") è contenuta in tutte le stringhe, quindi search vuoto passa sempre il filtro matchSearchBar.
+          // La funzione selectedCategory vuota o "Tutte le birre" fa passare tutte le birre nel filtro matchCategory.
+          // Quindi, all’avvio senza filtri, vengono mostrate tutte le birre perchè entrambe true nella funzione getFilteredBeers.
+          getFilteredBeers().map((beer, index) => (
             <div
-              key={beer.id}
+              key={index}
               className="bg-white w-full rounded-2xl shadow-md p-4 hover:shadow-xl transition-shadow"
             >
               <div className="flex flex-row sm:flex-col items-center gap-4">
@@ -72,7 +103,8 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          ))}
+          ))
+        }
       </div>
     </div>
   );
