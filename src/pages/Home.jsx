@@ -6,6 +6,16 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
+  function getTitle() {
+    if (search) {
+      return `Risultati per "${search}"`;
+    } else if (selectedCategory && selectedCategory !== "Tutte le birre") {
+      return `Categoria: ${selectedCategory}`;
+    } else {
+      return "Tutti i risultati";
+    }
+  }
+
   // Funzione per matchare il testo nella searchbar
   function matchSearchBar(beer) {
     return (
@@ -47,7 +57,7 @@ export default function Home() {
     <div className="max-w-5xl mx-auto ">
       <div className="flex justify-between">
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          Birre Artigianali
+          {getTitle()}
         </h1>
         <div className="flex flex-col sm:flex-row gap-x-5 gap-y-2 mb-2 sm:mb-0">
           <select
