@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import beerImage from "../database/beerImage";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   const [beers, setBeers] = useState([]);
@@ -7,15 +8,13 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sortOption, setSortOption] = useState("");
 
-  console.log(sortOption);
-
   function getTitle() {
     if (search) {
-      return `Risultati per "${search}"`;
+      return `Risultati per: "${search}"`;
     } else if (selectedCategory && selectedCategory !== "Tutte le birre") {
       return `Categoria: ${selectedCategory}`;
     } else {
-      return "Tutti i risultati";
+      return "Tutti i risultati:";
     }
   }
 
@@ -81,75 +80,77 @@ export default function Home() {
 
   return (
     <div className="max-w-5xl mx-auto ">
-      <div className="flex justify-between">
-        <div className="flex flex-col sm:flex-row gap-x-5 gap-y-2 mb-2 sm:mb-0">
-          <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-            {getTitle()}
-          </h1>
-          <select
-            className="w-30 border border-neutral-400 rounded-2xl pl-3 h-10"
-            onChange={(e) => {
-              setSortOption(e.target.value);
-            }}
-            value={sortOption}
-          >
-            <option value="">Ordina per:</option>
-            <option value="nameAsc">Nome: A-Z</option>
-            <option value="nameDec">Nome: Z-A</option>
-            <option value="catAsc">Stile: A-Z</option>
-            <option value="catDec">Stile: Z-A</option>
-          </select>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-x-5 gap-y-2 mb-2 sm:mb-0">
-          <select
-            className="w-50 border border-neutral-400 rounded-2xl pl-3 h-10"
-            onChange={(e) => {
-              setSelectedCategory(e.target.value);
-            }}
-            value={selectedCategory}
-          >
-            <option value="">Tutte le categorie</option>
-            <option value="Berliner Weisse">Berliner Weisse</option>
-            <option value="Gose">Gose</option>
-            <option value="IPA">IPA - Imperial/Double IPA</option>
-            <option value="Stout">Stout - Imperial Stout</option>
-            <option value="Belgian Strong Ale">Belgian Strong Ale</option>
-            <option value="Lambic">Lambic</option>
-          </select>
-          <input
-            className="w-50 border border-neutral-400 rounded-2xl pl-3 h-10"
-            type="text"
-            placeholder="Cerca una birra"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-          />
-        </div>
+      <h1 className="text-3xl font-bold mb-4 text-gray-800">{getTitle()}</h1>
+
+      {/* Inizio sezione di ricerca e filtraggio */}
+      <div className="flex flex-row flex-wrap gap-2 sm:gap-3 md:gap-5 mb-6 justify-between">
+        <select
+          className="w-30 border border-neutral-400 rounded-2xl pl-3 h-10 ml-auto bg-neutral-100"
+          onChange={(e) => {
+            setSortOption(e.target.value);
+          }}
+          value={sortOption}
+        >
+          <option value="">Ordina per:</option>
+          <option value="nameAsc">Nome: A-Z</option>
+          <option value="nameDec">Nome: Z-A</option>
+          <option value="catAsc">Stile: A-Z</option>
+          <option value="catDec">Stile: Z-A</option>
+        </select>
+        <select
+          className="w-50 border border-neutral-400 rounded-2xl pl-3 h-10 bg-neutral-100"
+          onChange={(e) => {
+            setSelectedCategory(e.target.value);
+          }}
+          value={selectedCategory}
+        >
+          <option value="">Tutte le categorie</option>
+          <option value="Berliner Weisse">Berliner Weisse</option>
+          <option value="Gose">Gose</option>
+          <option value="IPA">IPA - Imperial/Double IPA</option>
+          <option value="Stout">Stout - Imperial Stout</option>
+          <option value="Belgian Strong Ale">Belgian Strong Ale</option>
+          <option value="Lambic">Lambic</option>
+        </select>
+        <input
+          className="w-50 border border-neutral-400 rounded-2xl pl-3 h-10 bg-neutral-100"
+          type="text"
+          placeholder="Cerca una birra"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+        />
       </div>
 
+      {/* Inizio sezione Card */}
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredAndSortedBeers.map((beer, index) => (
-          <div
-            key={index}
-            className="bg-white w-full rounded-2xl shadow-md p-4 hover:shadow-xl transition-shadow"
-          >
-            <div className="flex flex-row sm:flex-col items-center gap-4">
-              <div className="w-24 flex justify-center">
-                <img
-                  className="h-24 sm:h-48 object-cover"
-                  src={beer.image}
-                  alt={beer.title}
-                />
+        {filteredAndSortedBeers.map((beer) => (
+          <Link to={`/dettaglio/${beer.id}`}>
+            <div
+              key={beer.id}
+              className="bg-white w-full rounded-2xl shadow-md p-4 hover:shadow-xl transition-shadow"
+            >
+              <div className="flex flex-row sm:flex-col items-center gap-4">
+                <div className="w-24 flex justify-center">
+                  <img
+                    className="h-24 sm:h-48 object-cover"
+                    src={beer.image}
+                    alt={beer.title}
+                  />
+                </div>
+                <div className="">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {beer.title}
+                  </h2>
+                  <p className="text-sm text-gray-600">{beer.category}</p>
+                </div>
               </div>
-              <div className="">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {beer.title}
-                </h2>
-                <p className="text-sm text-gray-600">{beer.category}</p>
-              </div>
+              <button onClick={() => addToCompare(beer)} className="">
+                Confronta
+              </button>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
