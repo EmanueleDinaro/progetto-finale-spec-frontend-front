@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import beerImage from "../database/beerImage";
 import { Link } from "react-router-dom";
+import { useCompare } from "../context/CompareContext";
 
 export default function Home() {
   const [beers, setBeers] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sortOption, setSortOption] = useState("");
+
+  const { addToCompare, removeFromCompare, compareBeers } = useCompare();
 
   function getTitle() {
     if (search) {
@@ -125,33 +128,65 @@ export default function Home() {
 
       {/* Inizio sezione Card */}
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredAndSortedBeers.map((beer) => (
-          <Link to={`/dettaglio/${beer.id}`}>
+        {filteredAndSortedBeers.map((beer) => {
+          const isBeerAdded = compareBeers.some((b) => b.id === beer.id);
+          const isCompareFull = compareBeers.length >= 2 && !isBeerAdded;
+          return (
             <div
               key={beer.id}
               className="bg-white w-full rounded-2xl shadow-md p-4 hover:shadow-xl transition-shadow"
             >
-              <div className="flex flex-row sm:flex-col items-center gap-4">
-                <div className="w-24 flex justify-center">
-                  <img
-                    className="h-24 sm:h-48 object-cover"
-                    src={beer.image}
-                    alt={beer.title}
-                  />
+              <div className="flex justify-between sm:flex-col gap-4 items-center">
+                <div className="flex flex-row sm:flex-col items-center">
+                  <Link to={`/dettaglio/${beer.id}`}>
+                    <div className="w-24 flex justify-center">
+                      <img
+                        className="h-24 sm:h-48 object-cover"
+                        src={beer.image}
+                        alt={beer.title}
+                      />
+                    </div>
+                  </Link>
+                  <div className="">
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      {beer.title}
+                    </h2>
+                    <p className="text-sm text-gray-600">{beer.category}</p>
+                  </div>
                 </div>
-                <div className="">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {beer.title}
-                  </h2>
-                  <p className="text-sm text-gray-600">{beer.category}</p>
+                <div className="flex gap-4">
+                  <button className="cursor-pointer">
+                    <i className="fa-regular fa-heart text-2xl"></i>
+                  </button>
+                  <button
+                    disabled={isCompareFull}
+                    className={`py-2 px-3 rounded-xl transition-colors-600 cursor-pointer
+                      ${
+                        isBeerAdded ? "bg-green-700 text-white" : "bg-blue-300"
+                      } disabled:bg-gray-400 disabled:text-gray-700 disabled:cursor-not-allowed`}
+                    onClick={() => {
+                      if (isBeerAdded) {
+                        removeFromCompare(beer.id);
+                      } else {
+                        addToCompare(beer);
+                      }
+                    }}
+                  >
+                    {isBeerAdded ? (
+                      <>
+                        <i className="fa-solid fa-check mr-1"></i> Aggiunta
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-plus mr-1"></i> Confronta
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
-              <button onClick={() => addToCompare(beer)} className="">
-                Confronta
-              </button>
             </div>
-          </Link>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+
 import Home from "./pages/Home";
 import Dettaglio from "./pages/Dettaglio";
 import Confronta from "./pages/Confronta";
