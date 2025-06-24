@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import beerImage from "../database/beerImage";
 import { Link } from "react-router-dom";
 import { useCompare } from "../context/CompareContext";
+import { useFavourite } from "../context/FavouriteContext";
 
 export default function Home() {
   const [beers, setBeers] = useState([]);
@@ -10,6 +11,8 @@ export default function Home() {
   const [sortOption, setSortOption] = useState("");
 
   const { addToCompare, removeFromCompare, compareBeers } = useCompare();
+  const { addToFavourite, removeFromFavourite, favouriteBeers } =
+    useFavourite();
 
   function getTitle() {
     if (search) {
@@ -130,7 +133,12 @@ export default function Home() {
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredAndSortedBeers.map((beer) => {
           const isBeerAdded = compareBeers.some((b) => b.id === beer.id);
-          const isCompareFull = compareBeers.length >= 2 && !isBeerAdded;
+          const isCompareFull = compareBeers.length >= 3 && !isBeerAdded;
+
+          const isBeerAddedToFavourite = favouriteBeers.some(
+            (b) => b.id === beer.id
+          );
+
           return (
             <div
               key={beer.id}
@@ -155,12 +163,23 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <button className="cursor-pointer">
-                    <i className="fa-regular fa-heart text-2xl"></i>
-                  </button>
+                  <button
+                    className={`cursor-pointer ${
+                      isBeerAddedToFavourite
+                        ? "fa-solid fa-heart text-3xl text-red-800 transition-colors duration-200"
+                        : "fa-regular fa-heart text-3xl"
+                    }`}
+                    onClick={() => {
+                      if (isBeerAddedToFavourite) {
+                        removeFromFavourite(beer.id);
+                      } else {
+                        addToFavourite(beer);
+                      }
+                    }}
+                  ></button>
                   <button
                     disabled={isCompareFull}
-                    className={`py-2 px-3 rounded-xl transition-colors-600 cursor-pointer
+                    className={`py-2 px-3 rounded-xl transition-colors duration-300 cursor-pointer
                       ${
                         isBeerAdded ? "bg-green-700 text-white" : "bg-blue-300"
                       } disabled:bg-gray-400 disabled:text-gray-700 disabled:cursor-not-allowed`}
@@ -170,6 +189,18 @@ export default function Home() {
                       } else {
                         addToCompare(beer);
                       }
+                      /*
+                      if (compareBeers.length === 0) {
+                        alert(
+                          "Aggiungi almeno un'altra birra per avviare il confronto."
+                        );
+                      } else if (compareBeers.length === 1) {
+                        alert(
+                          "Ora puoi andare alla pagina di confronto o selezionare un'altra birra."
+                        );
+                      } else if (compareBeers.length === 2) {
+                        alert("Ora puoi andare alla pagina di confronto.");
+                      }*/
                     }}
                   >
                     {isBeerAdded ? (
