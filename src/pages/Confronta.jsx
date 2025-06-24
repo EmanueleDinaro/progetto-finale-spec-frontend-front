@@ -35,11 +35,11 @@ export default function Confronta() {
           .
         </p>
       ) : (
-        <div className="flex flex-col items-center md:flex-row gap-6 justify-center">
+        <div className="flex flex-col md:flex-row gap-6 justify-center">
           {detailedBeers.map((beer) => (
             <div
               key={beer.id}
-              className="bg-white rounded-lg shadow-lg p-6 w-full md:w-1/2"
+              className="bg-white rounded-lg shadow-lg p-6 w-full md:w-1/2 flex flex-col justify-between  min-h-[600px]"
             >
               <img
                 className="w-full h-64 object-contain mb-4"
@@ -63,7 +63,7 @@ export default function Confronta() {
               <p className="mt-2 text-gray-800">{beer.description}</p>
               <button
                 onClick={() => removeFromCompare(beer.id)}
-                className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition"
+                className="cursor-pointer mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition"
               >
                 Rimuovi dal confronto
               </button>

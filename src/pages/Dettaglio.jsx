@@ -13,9 +13,9 @@ export default function Dettaglio() {
   }, [id]);
 
   return (
-    <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-6 flex flex-col md:flex-row gap-6">
+    <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-6 flex flex-col sm:flex-row gap-6">
       <img
-        className="w-1/2 mx-auto md:w-1/3 object-contain"
+        className="w-1/2 mx-auto sm:w-1/3 object-contain"
         src={fetchedBeer?.image}
         alt={fetchedBeer?.title}
       />
