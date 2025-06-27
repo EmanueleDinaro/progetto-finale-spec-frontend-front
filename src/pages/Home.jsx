@@ -1,18 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import beerImage from "../database/beerImage";
-import { Link } from "react-router-dom";
-import { useCompare } from "../context/CompareContext";
-import { useFavourite } from "../context/FavouriteContext";
+import BeerCard from "../components/BeerCard";
 
 export default function Home() {
   const [beers, setBeers] = useState([]);
   const [search, setSearch] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sortOption, setSortOption] = useState("");
-
-  const { addToCompare, removeFromCompare, compareBeers } = useCompare();
-  const { addToFavourite, removeFromFavourite, favouriteBeers } =
-    useFavourite();
 
   function getTitle() {
     if (search) {
@@ -23,6 +18,23 @@ export default function Home() {
       return "Tutti i risultati:";
     }
   }
+
+  function debounce(callback, delay) {
+    let timer;
+    return (value) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        callback(value);
+      }, delay);
+    };
+  }
+
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearch(value);
+    }, 300),
+    []
+  );
 
   // Funzione per matchare il testo nella searchbar
   function matchSearchBar(beer) {
@@ -122,103 +134,24 @@ export default function Home() {
           className="w-50 border border-neutral-400 rounded-2xl pl-3 h-10 bg-neutral-100"
           type="text"
           placeholder="Cerca una birra"
-          value={search}
+          value={inputValue}
           onChange={(e) => {
-            setSearch(e.target.value);
+            setInputValue(e.target.value);
+            debouncedSearch(e.target.value);
           }}
         />
       </div>
 
       {/* Inizio sezione Card */}
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredAndSortedBeers.map((beer) => {
-          const isBeerAdded = compareBeers.some((b) => b.id === beer.id);
-          const isCompareFull = compareBeers.length >= 3 && !isBeerAdded;
-
-          const isBeerAddedToFavourite = favouriteBeers.some(
-            (b) => b.id === beer.id
-          );
-
-          return (
-            <div
-              key={beer.id}
-              className="bg-white w-full rounded-2xl shadow-md p-4 hover:shadow-xl transition-shadow"
-            >
-              <div className="flex justify-between sm:flex-col gap-4 items-center">
-                <div className="flex flex-row sm:flex-col items-center">
-                  <Link to={`/dettaglio/${beer.id}`}>
-                    <div className="w-24 flex justify-center">
-                      <img
-                        className="h-24 sm:h-48 object-cover"
-                        src={beer.image}
-                        alt={beer.title}
-                      />
-                    </div>
-                  </Link>
-                  <div className="">
-                    <h2 className="text-lg font-semibold text-gray-900">
-                      {beer.title}
-                    </h2>
-                    <p className="text-sm text-gray-600">{beer.category}</p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    className={`cursor-pointer ${
-                      isBeerAddedToFavourite
-                        ? "fa-solid fa-heart text-3xl text-red-800 transition-colors duration-200"
-                        : "fa-regular fa-heart text-3xl"
-                    }`}
-                    onClick={() => {
-                      if (isBeerAddedToFavourite) {
-                        removeFromFavourite(beer.id);
-                      } else {
-                        addToFavourite(beer);
-                      }
-                    }}
-                  ></button>
-                  <button
-                    disabled={isCompareFull}
-                    className={`py-2 px-3 rounded-xl transition-colors duration-300 cursor-pointer
-                      ${
-                        isBeerAdded ? "bg-green-700 text-white" : "bg-blue-300"
-                      } disabled:bg-gray-400 disabled:text-gray-700 disabled:cursor-not-allowed`}
-                    onClick={() => {
-                      if (isBeerAdded) {
-                        removeFromCompare(beer.id);
-                      } else {
-                        addToCompare(beer);
-                      }
-                      /*
-                      if (compareBeers.length === 0) {
-                        alert(
-                          "Aggiungi almeno un'altra birra per avviare il confronto."
-                        );
-                      } else if (compareBeers.length === 1) {
-                        alert(
-                          "Ora puoi andare alla pagina di confronto o selezionare un'altra birra."
-                        );
-                      } else if (compareBeers.length === 2) {
-                        alert("Ora puoi andare alla pagina di confronto.");
-                      }*/
-                    }}
-                  >
-                    {isBeerAdded ? (
-                      <>
-                        <i className="fa-solid fa-check mr-1"></i> Aggiunta
-                      </>
-                    ) : (
-                      <>
-                        <i className="fa-solid fa-plus mr-1"></i> Confronta
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      {filteredBeers.length === 0 ? (
+        <p className="text-center text-gray-600">Nessuna birra trovata.</p>
+      ) : (
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filteredAndSortedBeers.map((beer) => (
+            <BeerCard key={beer.id} beer={beer} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

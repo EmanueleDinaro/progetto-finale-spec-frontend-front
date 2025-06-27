@@ -1,11 +1,18 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 // Creazione del context FavouriteContext
 const FavouriteContext = createContext();
 
 // Creazione ed esportazione del Provider che avvolge tutti i Components.jsx e gli fornisce State e Function
 export default function FavouriteProvider({ children }) {
-  const [favouriteBeers, setFavouriteBeers] = useState([]);
+  const [favouriteBeers, setFavouriteBeers] = useState(() => {
+    const stored = localStorage.getItem("favouriteBeers");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("favouriteBeers", JSON.stringify(favouriteBeers));
+  }, [favouriteBeers]);
 
   // Funzione per aggiungere una birra ai preferiti
   function addToFavourite(beer) {

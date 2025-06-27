@@ -8,12 +8,12 @@ import App from "./App.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <FavouriteProvider>
-      <CompareProvider>
-        <BrowserRouter>
+    <BrowserRouter>
+      <FavouriteProvider>
+        <CompareProvider>
           <App />
-        </BrowserRouter>
-      </CompareProvider>
-    </FavouriteProvider>
+        </CompareProvider>
+      </FavouriteProvider>
+    </BrowserRouter>
   </StrictMode>
 );

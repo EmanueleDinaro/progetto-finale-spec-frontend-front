@@ -28,7 +28,7 @@ export default function Confronta() {
       <h1 className="text-3xl font-bold text-center mb-8">Confronto Birre</h1>
       {detailedBeers.length === 0 ? (
         <p className="text-center text-gray-600">
-          Nessuna birra selezionata. Torna alla{" "}
+          Nessun elemento selezionato nel comparatore. Torna alla{" "}
           <Link to="/" className="text-blue-500 underline">
             Home
           </Link>
