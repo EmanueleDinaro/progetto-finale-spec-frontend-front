@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import beerImage from "../database/beerImage";
 import BeerCard from "../components/BeerCard";
+import SearchBar from "../components/SearchBar";
+import Filters from "../components/FIlters";
 
 export default function Home() {
   const [beers, setBeers] = useState([]);
@@ -102,43 +104,16 @@ export default function Home() {
 
       {/* Inizio sezione di ricerca e filtraggio */}
       <div className="flex flex-row flex-wrap gap-2 sm:gap-3 md:gap-5 mb-6 justify-between">
-        <select
-          className="w-30 border border-neutral-400 rounded-2xl pl-3 h-10 ml-auto bg-neutral-100"
-          onChange={(e) => {
-            setSortOption(e.target.value);
-          }}
-          value={sortOption}
-        >
-          <option value="">Ordina per:</option>
-          <option value="nameAsc">Nome: A-Z</option>
-          <option value="nameDec">Nome: Z-A</option>
-          <option value="catAsc">Stile: A-Z</option>
-          <option value="catDec">Stile: Z-A</option>
-        </select>
-        <select
-          className="w-50 border border-neutral-400 rounded-2xl pl-3 h-10 bg-neutral-100"
-          onChange={(e) => {
-            setSelectedCategory(e.target.value);
-          }}
-          value={selectedCategory}
-        >
-          <option value="">Tutte le categorie</option>
-          <option value="Berliner Weisse">Berliner Weisse</option>
-          <option value="Gose">Gose</option>
-          <option value="IPA">IPA - Imperial/Double IPA</option>
-          <option value="Stout">Stout - Imperial Stout</option>
-          <option value="Belgian Strong Ale">Belgian Strong Ale</option>
-          <option value="Lambic">Lambic</option>
-        </select>
-        <input
-          className="w-50 border border-neutral-400 rounded-2xl pl-3 h-10 bg-neutral-100"
-          type="text"
-          placeholder="Cerca una birra"
-          value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            debouncedSearch(e.target.value);
-          }}
+        <Filters
+          sortOption={sortOption}
+          setSortOption={setSortOption}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
+        <SearchBar
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          debouncedSearch={debouncedSearch}
         />
       </div>
 
